@@ -37,12 +37,12 @@ public class AuctionsController(IUnitOfWork unitOfWork, IMapper mapper,
 
         unitOfWork.AuctionRepository.AddAuction(auction);
 
+        var newAuction = mapper.Map<AuctionDto>(auction);
+
+        await publishEndpoint.Publish(mapper.Map<AuctionCreated>(newAuction));
+
         if (await unitOfWork.Complete())
-        {
-            var newAuction = mapper.Map<AuctionDto>(auction);
-            await publishEndpoint.Publish(mapper.Map<AuctionCreated>(newAuction));
             return CreatedAtAction(nameof(GetAuction), new {auctionId = auction.Id}, newAuction);
-        }
             
         return BadRequest("Failed to create auction");
     }
