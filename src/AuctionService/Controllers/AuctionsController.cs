@@ -3,11 +3,14 @@ using AuctionService.DTOs;
 using AuctionService.Entities;
 using AuctionService.Interfaces;
 using AutoMapper;
+using Contracts;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionService.Controllers;
 
-public class AuctionsController(IUnitOfWork unitOfWork, IMapper mapper) : BaseApiController
+public class AuctionsController(IUnitOfWork unitOfWork, IMapper mapper,
+    IPublishEndpoint publishEndpoint) : BaseApiController
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<AuctionDto>>> GetAuctions()
@@ -30,13 +33,17 @@ public class AuctionsController(IUnitOfWork unitOfWork, IMapper mapper) : BaseAp
     public async Task<ActionResult<AuctionDto>> CreateAuction(AuctionCreateDto auctionCreateDto)
     {
         var auction = mapper.Map<Auction>(auctionCreateDto);
-
         auction.Seller = "Test";
 
         unitOfWork.AuctionRepository.AddAuction(auction);
 
         if (await unitOfWork.Complete())
-            return CreatedAtAction(nameof(GetAuction), new {auctionId = auction.Id}, mapper.Map<AuctionDto>(auction));
+        {
+            var newAuction = mapper.Map<AuctionDto>(auction);
+            await publishEndpoint.Publish(mapper.Map<AuctionCreated>(newAuction));
+            return CreatedAtAction(nameof(GetAuction), new {auctionId = auction.Id}, newAuction);
+        }
+            
         return BadRequest("Failed to create auction");
     }
 
