@@ -16,6 +16,9 @@ public class AutoMapperProfiles : Profile
             .ForMember(x => x.Item, y => y.MapFrom(z => z));
         CreateMap<AuctionCreateDto, Item>();
         CreateMap<AuctionDto, AuctionCreated>();
+        CreateMap<Auction, AuctionUpdated>()
+            .IncludeMembers(x => x.Item);
+        CreateMap<Item, AuctionUpdated>();
 
         CreateMap<string, DateOnly>().ConvertUsing(s => DateOnly.Parse(s));
         CreateMap<string, TimeOnly>().ConvertUsing(s => TimeOnly.Parse(s));

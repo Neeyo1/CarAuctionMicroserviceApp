@@ -59,6 +59,8 @@ public class AuctionsController(IUnitOfWork unitOfWork, IMapper mapper,
         auction.Item.Mileage = auctionEditDto.Mileage ?? auction.Item.Mileage;
         auction.Item.Year = auctionEditDto.Year ?? auction.Item.Year;
 
+        await publishEndpoint.Publish(mapper.Map<AuctionUpdated>(auction));
+
         if (await unitOfWork.Complete()) return NoContent();
         return BadRequest("Failed to edit auction");
     }
@@ -70,6 +72,8 @@ public class AuctionsController(IUnitOfWork unitOfWork, IMapper mapper,
         if (auction == null) return BadRequest("Failed to find auction");
 
         unitOfWork.AuctionRepository.DeleteAuction(auction);
+
+        await publishEndpoint.Publish<AuctionDeleted>(new {Id = auction.Id.ToString()});
 
         if (await unitOfWork.Complete()) return NoContent();
         return BadRequest("Failed to delete auction");
