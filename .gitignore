@@ -485,3 +485,4 @@ $RECYCLE.BIN/
 src/AuctionService/appsettings.json
 src/SearchService/appsettings.json
 src/IdentityService/keys/
+src/GatewayService/appsettings.json
