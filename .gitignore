@@ -484,3 +484,4 @@ $RECYCLE.BIN/
 *.swp
 src/AuctionService/appsettings.json
 src/SearchService/appsettings.json
+src/IdentityService/keys/
