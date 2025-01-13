@@ -5,6 +5,7 @@ using AuctionService.Interfaces;
 using AutoMapper;
 using Contracts;
 using MassTransit;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionService.Controllers;
@@ -29,11 +30,16 @@ public class AuctionsController(IUnitOfWork unitOfWork, IMapper mapper,
         return Ok(mapper.Map<AuctionDto>(auction));
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<AuctionDto>> CreateAuction(AuctionCreateDto auctionCreateDto)
     {
+        var identity = User.Identity;
+        if (identity == null)
+            return BadRequest("Failed to get identity of a user");
+
         var auction = mapper.Map<Auction>(auctionCreateDto);
-        auction.Seller = "Test";
+        auction.Seller = identity.Name;
 
         unitOfWork.AuctionRepository.AddAuction(auction);
 
@@ -47,11 +53,19 @@ public class AuctionsController(IUnitOfWork unitOfWork, IMapper mapper,
         return BadRequest("Failed to create auction");
     }
 
+    [Authorize]
     [HttpPut("{auctionId}")]
     public async Task<ActionResult> EditAuction(AuctionEditDto auctionEditDto, Guid auctionId)
     {
+        var identity = User.Identity;
+        if (identity == null)
+            return BadRequest("Failed to get identity of a user");
+
         var auction = await unitOfWork.AuctionRepository.GetAuctionByIdAsync(auctionId);
         if (auction == null) return BadRequest("Failed to find auction");
+
+        if (auction.Seller != identity.Name)
+            return Unauthorized();
 
         auction.Item.Make = auctionEditDto.Make ?? auction.Item.Make;
         auction.Item.Model = auctionEditDto.Model ?? auction.Item.Model;
@@ -65,11 +79,19 @@ public class AuctionsController(IUnitOfWork unitOfWork, IMapper mapper,
         return BadRequest("Failed to edit auction");
     }
 
+    [Authorize]
     [HttpDelete("{auctionId}")]
     public async Task<ActionResult> DeleteAuction(Guid auctionId)
     {
+        var identity = User.Identity;
+        if (identity == null)
+            return BadRequest("Failed to get identity of a user");
+            
         var auction = await unitOfWork.AuctionRepository.GetAuctionByIdAsync(auctionId);
         if (auction == null) return BadRequest("Failed to find auction");
+
+        if (auction.Seller != identity.Name)
+            return Unauthorized();
 
         unitOfWork.AuctionRepository.DeleteAuction(auction);
 
