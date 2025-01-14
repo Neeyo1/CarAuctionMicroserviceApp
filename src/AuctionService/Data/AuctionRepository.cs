@@ -26,7 +26,13 @@ public class AuctionRepository(AuctionDbContext context, IMapper mapper) : IAuct
             .ProjectTo<AuctionDto>(mapper.ConfigurationProvider)
             .ToListAsync();
     }
+
     public async Task<Auction?> GetAuctionByIdAsync(Guid auctionId)
+    {
+        return await context.Auctions.FindAsync(auctionId);
+    }
+
+    public async Task<Auction?> GetAuctionWithItemByIdAsync(Guid auctionId)
     {
         return await context.Auctions
             .Include(x => x.Item)

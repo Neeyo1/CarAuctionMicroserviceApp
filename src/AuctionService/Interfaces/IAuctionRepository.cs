@@ -9,4 +9,5 @@ public interface IAuctionRepository
     void DeleteAuction(Auction auction);
     Task<IEnumerable<AuctionDto>> GetAuctionsAsync();
     Task<Auction?> GetAuctionByIdAsync(Guid auctionId);
+    Task<Auction?> GetAuctionWithItemByIdAsync(Guid auctionId);
 }
