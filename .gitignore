@@ -486,3 +486,4 @@ src/AuctionService/appsettings.json
 src/SearchService/appsettings.json
 src/IdentityService/keys/
 src/GatewayService/appsettings.json
+src/BiddingService/appsettings.json
