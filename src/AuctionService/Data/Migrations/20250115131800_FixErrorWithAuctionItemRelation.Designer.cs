@@ -3,6 +3,7 @@ using System;
 using AuctionService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AuctionService.Data.Migrations
 {
     [DbContext(typeof(AuctionDbContext))]
-    partial class AuctionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250115131800_FixErrorWithAuctionItemRelation")]
+    partial class FixErrorWithAuctionItemRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -267,8 +270,7 @@ namespace AuctionService.Data.Migrations
                 {
                     b.HasOne("AuctionService.Entities.Auction", "Auction")
                         .WithOne("Item")
-                        .HasForeignKey("AuctionService.Entities.Item", "AuctionId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("AuctionService.Entities.Item", "AuctionId");
 
                     b.Navigation("Auction");
                 });

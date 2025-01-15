@@ -58,7 +58,7 @@ services:
       context: .
       dockerfile: src/IdentityService/DockerFile
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings__DefaultConnection=Server=postgres:5432;User ID=postgres;Password=zaq1@WSX;Database=identity
     ports:

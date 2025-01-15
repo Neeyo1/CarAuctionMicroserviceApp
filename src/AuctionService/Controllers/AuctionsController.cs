@@ -61,8 +61,9 @@ public class AuctionsController(IUnitOfWork unitOfWork, IMapper mapper,
         if (identity == null)
             return BadRequest("Failed to get identity of a user");
 
-        var auction = await unitOfWork.AuctionRepository.GetAuctionByIdAsync(auctionId);
+        var auction = await unitOfWork.AuctionRepository.GetAuctionWithItemByIdAsync(auctionId);
         if (auction == null) return BadRequest("Failed to find auction");
+        if (auction.Item == null) return BadRequest("Failed to find item");
 
         if (auction.Seller != identity.Name)
             return Unauthorized();

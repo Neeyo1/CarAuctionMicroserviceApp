@@ -16,5 +16,12 @@ public class AuctionDbContext(DbContextOptions options) : DbContext(options)
         modelBuilder.AddInboxStateEntity();
         modelBuilder.AddOutboxStateEntity();
         modelBuilder.AddOutboxMessageEntity();
+
+        modelBuilder.Entity<Auction>()
+            .HasOne(x => x.Item)
+            .WithOne(x => x.Auction)
+            .HasForeignKey<Item>(x => x.AuctionId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }
