@@ -24,7 +24,7 @@ public class AuctionsController(IUnitOfWork unitOfWork, IMapper mapper,
     [HttpGet("{auctionId}")]
     public async Task<ActionResult<AuctionDto>> GetAuction(Guid auctionId)
     {
-        var auction = await unitOfWork.AuctionRepository.GetAuctionByIdAsync(auctionId);
+        var auction = await unitOfWork.AuctionRepository.GetAuctionWithItemByIdAsync(auctionId);
         if (auction == null) return NotFound();
 
         return Ok(mapper.Map<AuctionDto>(auction));
