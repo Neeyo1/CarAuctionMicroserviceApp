@@ -1,6 +1,7 @@
 using AutoMapper;
 using BiddingService.DTOs;
 using BiddingService.Entities;
+using BiddingService.Services;
 using Contracts;
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +10,8 @@ using MongoDB.Entities;
 
 namespace BiddingService.Controllers;
 
-public class BidsController(IMapper mapper, IPublishEndpoint publishEndpoint) : BaseApiController
+public class BidsController(IMapper mapper, IPublishEndpoint publishEndpoint,
+    GrpcAuctionClient grpcClient) : BaseApiController
 {
     [HttpGet("{auctionId}")]
     public async Task<ActionResult<IEnumerable<BidDto>>> GetBidsForAuction(string auctionId)
@@ -33,8 +35,9 @@ public class BidsController(IMapper mapper, IPublishEndpoint publishEndpoint) : 
         var auction = await DB.Find<Auction>().OneAsync(auctionId);
         if (auction == null)
         {
-            //Check in service if auction exist
-            return NotFound();
+            auction = grpcClient.GetAuction(auctionId);
+            if (auction == null)
+                return BadRequest("Cannot find auction to place bid on");
         }
         if (auction.Seller == identity.Name)
             return BadRequest("You cannot bid on your own auction");
