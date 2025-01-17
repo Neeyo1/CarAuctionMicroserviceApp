@@ -17,7 +17,7 @@ public class AuctionFinishedConsumer : IConsumer<AuctionFinished>
             throw new MessageException(typeof(AuctionFinished), 
                 "Problem occured while finishing auction in auction database");
 
-        if (context.Message.ItemSold)
+        if (context.Message.ItemSold && context.Message.Amount != null)
         {
             auction.Winner = context.Message.Winner;
             auction.SoldAmount = (int)context.Message.Amount;
