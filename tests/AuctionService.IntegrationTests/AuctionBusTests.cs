@@ -10,8 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AuctionService.IntegrationTests;
 
-public class AuctionBusTests(CustomWebAppFactory factory) :
-    IClassFixture<CustomWebAppFactory>, IAsyncLifetime
+[Collection("Shared collection")]
+public class AuctionBusTests(CustomWebAppFactory factory) : IAsyncLifetime
 {
     private readonly HttpClient httpClient = factory.CreateClient();
     private readonly ITestHarness testHarness = factory.Services.GetTestHarness();

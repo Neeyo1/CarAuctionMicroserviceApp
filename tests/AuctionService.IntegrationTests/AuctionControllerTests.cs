@@ -8,8 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AuctionService.IntegrationTests;
 
-public class AuctionControllerTests(CustomWebAppFactory factory) : 
-    IClassFixture<CustomWebAppFactory>,IAsyncLifetime
+[Collection("Shared collection")]
+public class AuctionControllerTests(CustomWebAppFactory factory) : IAsyncLifetime
 {
     private readonly HttpClient httpClient = factory.CreateClient();
     private const string AUCTION_ID = "afbee524-5972-4075-8800-7d1f9d7b0a0c";
